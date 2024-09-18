@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:blog_app/screens/detail/detail_screen.dart';
 import 'package:blog_app/utils/colors.dart';
 import 'package:blog_app/views/post_item_view.dart';
+import 'package:blog_app/views/post_shimmer_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:blog_app/model/user_model.dart';
 import 'package:stacked/stacked.dart';
@@ -28,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Timer? _timer;
 
-
   Future<void> openTelegramLink() async {
     const url = 'https://t.me/hello_US7';
 
@@ -38,7 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
       throw 'Could not launch $url';
     }
   }
-
 
   @override
   void initState() {
@@ -64,7 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,18 +81,22 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         actions: [
-          IconButton(onPressed: () async{
-
-            await launchUrl(Uri.parse('https://t.me/hello_US7'));
-            await launch('https://t.me/hello_US7');
-          }, icon: Icon(CupertinoIcons.share,))
+          IconButton(
+              onPressed: () async {
+                await launchUrl(Uri.parse('https://t.me/hello_US7'));
+                await launch('https://t.me/hello_US7');
+              },
+              icon: Icon(
+                CupertinoIcons.share,
+              ))
         ],
       ),
       body: ViewModelBuilder<MainViewModel>.reactive(
         viewModelBuilder: () {
           return MainViewModel();
         },
-        builder: (BuildContext context, MainViewModel viewModel, Widget? child) {
+        builder:
+            (BuildContext context, MainViewModel viewModel, Widget? child) {
           return Stack(
             children: [
               Column(
@@ -101,12 +104,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     height: 130,
                     child: ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                         scrollDirection: Axis.horizontal,
                         itemCount: viewModel.users.length,
                         itemBuilder: (_, position) {
                           var user = viewModel.users[position];
-                          return  Padding(
+                          return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Column(
                               children: [
@@ -180,19 +184,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-
-                  Expanded(
-                    child: ListView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        scrollDirection: Axis.vertical,
-                        itemCount: viewModel.posts.length,
-                        itemBuilder: (_, position) {
-                          var post = viewModel.posts[position];
-                          return  PostItemView(posts: post, onPressed: (){
-
-                          });
-                        }),
-                  ),
+                  (viewModel.progressData)
+                      ? Expanded(child: PostShimmerView())
+                      : Expanded(
+                          child: ListView.builder(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              scrollDirection: Axis.vertical,
+                              itemCount: viewModel.posts.length,
+                              itemBuilder: (_, position) {
+                                var post = viewModel.posts[position];
+                                return PostItemView(
+                                    posts: post, onPressed: () {});
+                              }),
+                        ),
                 ],
               ),
               // if (viewModel.progressData) showAsProgress(),
@@ -205,8 +210,6 @@ class _HomeScreenState extends State<HomeScreen> {
           viewModel.errorData.listen((event) {
             showError(context, event);
           });
-
-
         },
       ),
     );

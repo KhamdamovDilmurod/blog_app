@@ -45,6 +45,7 @@ dependencies:
   url_launcher: ^6.3.0
   dio: ^5.7.0
   stacked: ^3.4.3
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_test:

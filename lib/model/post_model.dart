@@ -6,6 +6,7 @@ class PostModel {
   final String color;
   final int year;
   final String pantone_value;
+  bool isSaved = false;
 
 
   PostModel({
