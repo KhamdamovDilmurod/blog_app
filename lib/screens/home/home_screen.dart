@@ -1,20 +1,14 @@
 import 'dart:async';
-import 'dart:convert';
-import 'package:blog_app/screens/detail/detail_screen.dart';
 import 'package:blog_app/utils/colors.dart';
 import 'package:blog_app/views/post_item_view.dart';
 import 'package:blog_app/views/post_shimmer_view.dart';
+import 'package:blog_app/views/user_shimmer_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import 'package:blog_app/model/user_model.dart';
 import 'package:stacked/stacked.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../../model/post_model.dart';
 import '../../utils/utils.dart';
-import '../../views/item_view_post.dart';
 import '../view_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -101,6 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Column(
                 children: [
+                  viewModel.progressData ? UserShimmerView():
                   SizedBox(
                     height: 130,
                     child: ListView.builder(
@@ -146,23 +141,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: PageView(
                             controller: _pageController,
                             children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.green,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.asset("assets/img_1.png", fit: BoxFit.cover,),
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.asset("assets/img_2.png", fit: BoxFit.cover,),
                               ),
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.yellow,
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.asset("assets/img_3.png", fit: BoxFit.cover,),
                               ),
                             ],
                           ),
@@ -195,7 +184,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (_, position) {
                                 var post = viewModel.posts[position];
                                 return PostItemView(
-                                    posts: post, onPressed: () {});
+                                    posts: post, onPressed: () {},
+                                  onSave: () {
+                                      print(post.toString());
+                                      viewModel.savePost(post);
+                                  },
+                                  onDelete: () {  },);
                               }),
                         ),
                 ],
@@ -207,6 +201,9 @@ class _HomeScreenState extends State<HomeScreen> {
         onViewModelReady: (viewModel) {
           viewModel.getUsers();
           viewModel.getPosts();
+          viewModel.savedPostData.listen((event){
+            showError(context, event.toString());
+          });
           viewModel.errorData.listen((event) {
             showError(context, event);
           });

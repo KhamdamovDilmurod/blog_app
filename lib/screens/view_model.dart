@@ -6,9 +6,13 @@ import 'package:blog_app/model/user_model.dart';
 import 'package:stacked/stacked.dart';
 
 import '../api/api_service.dart';
+import '../db/data_base.dart';
 
 class MainViewModel extends BaseViewModel {
   final api = ApiService();
+
+  final DatabaseHelper dbHelper = DatabaseHelper();
+
   final StreamController<String> _errorStream = StreamController();
 
 
@@ -56,6 +60,51 @@ class MainViewModel extends BaseViewModel {
     if (data != null) {
       posts = data;
       _postsStream.sink.add(posts);
+    }
+    progressData = false;
+    notifyListeners();
+  }
+
+  /////////////////
+
+  StreamController<int> _postSaveStream = StreamController();
+
+  Stream<int> get savedPostData {
+    return _postSaveStream.stream;
+  }
+
+  int isSaved = 0;
+
+  void savePost(PostModel post) async{
+    progressData = true;
+    notifyListeners();
+    final  data =  await dbHelper.insertPost(post);
+    if(data!=null){
+      isSaved = data;
+      _postSaveStream.sink.add(data);
+    }
+    progressData = false;
+    notifyListeners();
+  }
+
+
+  ////////////////////////////
+
+  StreamController<List<PostModel>> _savedPostsStream = StreamController();
+
+  Stream<List<PostModel>> get savedPostsData {
+    return _savedPostsStream.stream;
+  }
+
+  List<PostModel> savedPosts = [];
+
+  void getPostsFromDB() async {
+    progressData = true;
+    notifyListeners();
+    final data = await dbHelper.getPosts();
+    if (data != null) {
+      savedPosts = data;
+      _savedPostsStream.sink.add(savedPosts);
     }
     progressData = false;
     notifyListeners();

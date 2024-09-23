@@ -6,8 +6,15 @@ import '../model/post_model.dart';
 class PostItemView extends StatefulWidget {
   final PostModel posts;
   final VoidCallback onPressed;
+  final VoidCallback onSave;
+  final VoidCallback onDelete;
 
-  const PostItemView({Key? key, required this.posts, required this.onPressed})
+  const PostItemView(
+      {Key? key,
+      required this.posts,
+      required this.onPressed,
+      required this.onSave,
+      required this.onDelete})
       : super(key: key);
 
   @override
@@ -74,9 +81,11 @@ class _PostItemViewState extends State<PostItemView> {
               padding: EdgeInsets.only(right: 8.0),
               child: IconButton(
                   onPressed: () {
-                    setState(() {
-                      isSaved = !isSaved;
-                    });
+                    if(isSaved){
+                      widget.onDelete();
+                    } else {
+                      widget.onSave();
+                    }
                   },
                   icon: isSaved
                       ? Icon(
