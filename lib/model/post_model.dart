@@ -8,7 +8,6 @@ class PostModel {
   final String pantone_value;
   bool isSaved = false;
 
-
   PostModel({
     required this.id,
     required this.name,

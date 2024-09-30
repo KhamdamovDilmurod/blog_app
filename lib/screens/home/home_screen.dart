@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         title: Text(
           "Blog Application",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontFamily: 'lobster'),
         ),
         actions: [
           IconButton(
@@ -186,10 +186,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 return PostItemView(
                                     posts: post, onPressed: () {},
                                   onSave: () {
-                                      print(post.toString());
                                       viewModel.savePost(post);
                                   },
-                                  onDelete: () {  },);
+                                  onDelete: () {
+                                      viewModel.removePost(post);
+                                  },);
                               }),
                         ),
                 ],
@@ -201,9 +202,6 @@ class _HomeScreenState extends State<HomeScreen> {
         onViewModelReady: (viewModel) {
           viewModel.getUsers();
           viewModel.getPosts();
-          viewModel.savedPostData.listen((event){
-            showError(context, event.toString());
-          });
           viewModel.errorData.listen((event) {
             showError(context, event);
           });
