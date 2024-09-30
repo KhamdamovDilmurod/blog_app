@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:blog_app/screens/detail/detail_screen.dart';
 import 'package:blog_app/utils/colors.dart';
 import 'package:blog_app/views/post_item_view.dart';
 import 'package:blog_app/views/post_shimmer_view.dart';
@@ -72,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         title: Text(
           "Blog Application",
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontFamily: 'lobster'),
         ),
         actions: [
           IconButton(
@@ -95,41 +96,42 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Column(
                 children: [
-                  viewModel.progressData ? UserShimmerView():
-                  SizedBox(
-                    height: 130,
-                    child: ListView.builder(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: viewModel.users.length,
-                        itemBuilder: (_, position) {
-                          var user = viewModel.users[position];
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(40),
-                                  child: Image.network(
-                                    user.avatar,
-                                    width: 80,
-                                    height: 80,
+                  viewModel.progressData
+                      ? UserShimmerView()
+                      : SizedBox(
+                          height: 130,
+                          child: ListView.builder(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 8),
+                              scrollDirection: Axis.horizontal,
+                              itemCount: viewModel.users.length,
+                              itemBuilder: (_, position) {
+                                var user = viewModel.users[position];
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(40),
+                                        child: Image.network(
+                                          user.avatar,
+                                          width: 80,
+                                          height: 80,
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Text(
+                                          user.firstName,
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      )
+                                    ],
                                   ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    user.firstName,
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                )
-                              ],
-                            ),
-                          );
-                        }),
-                  ),
+                                );
+                              }),
+                        ),
                   Container(
                     width: MediaQuery.of(context).size.width * .9,
                     height: 200,
@@ -143,15 +145,24 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
-                                child: Image.asset("assets/img_1.png", fit: BoxFit.cover,),
+                                child: Image.asset(
+                                  "assets/img_1.png",
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
-                                child: Image.asset("assets/img_2.png", fit: BoxFit.cover,),
+                                child: Image.asset(
+                                  "assets/img_2.png",
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(20),
-                                child: Image.asset("assets/img_3.png", fit: BoxFit.cover,),
+                                child: Image.asset(
+                                  "assets/img_3.png",
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ],
                           ),
@@ -184,12 +195,21 @@ class _HomeScreenState extends State<HomeScreen> {
                               itemBuilder: (_, position) {
                                 var post = viewModel.posts[position];
                                 return PostItemView(
-                                    posts: post, onPressed: () {},
-                                  onSave: () {
-                                      print(post.toString());
-                                      viewModel.savePost(post);
+                                  posts: post,
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (ctx) =>
+                                                DetailScreen(post: post)));
                                   },
-                                  onDelete: () {  },);
+                                  onSave: () {
+                                    viewModel.savePost(post);
+                                  },
+                                  onDelete: () {
+                                    viewModel.removePost(post);
+                                  },
+                                );
                               }),
                         ),
                 ],
@@ -201,9 +221,6 @@ class _HomeScreenState extends State<HomeScreen> {
         onViewModelReady: (viewModel) {
           viewModel.getUsers();
           viewModel.getPosts();
-          viewModel.savedPostData.listen((event){
-            showError(context, event.toString());
-          });
           viewModel.errorData.listen((event) {
             showError(context, event);
           });

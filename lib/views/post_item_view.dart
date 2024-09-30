@@ -86,6 +86,9 @@ class _PostItemViewState extends State<PostItemView> {
                     } else {
                       widget.onSave();
                     }
+                    setState(() {
+                      isSaved = !isSaved;
+                    });
                   },
                   icon: isSaved
                       ? Icon(
@@ -95,7 +98,7 @@ class _PostItemViewState extends State<PostItemView> {
                       : Icon(
                           Icons.favorite_border,
                           color: kPrimaryColor,
-                        )),
+                        ),),
             )
           ],
         ),

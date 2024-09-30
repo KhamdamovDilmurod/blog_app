@@ -56,14 +56,27 @@ class MainViewModel extends BaseViewModel {
   void getPosts() async {
     progressData = true;
     notifyListeners();
-    final data = await api.getPosts(_errorStream);
-    if (data != null) {
-      posts = data;
+
+    // Fetch posts from API
+    final fetchedPosts = await api.getPosts(_errorStream);
+
+    // Fetch saved posts from the local database
+    final savedPosts = await dbHelper.getPosts();
+
+    if (fetchedPosts != null) {
+      // Mark posts as saved if they exist in the savedPosts list
+      for (var post in fetchedPosts) {
+        post.isSaved = savedPosts.any((savedPost) => savedPost.id == post.id);
+      }
+
+      posts = fetchedPosts;
       _postsStream.sink.add(posts);
     }
+
     progressData = false;
     notifyListeners();
   }
+
 
   /////////////////
 
@@ -76,14 +89,14 @@ class MainViewModel extends BaseViewModel {
   int isSaved = 0;
 
   void savePost(PostModel post) async{
-    progressData = true;
+    // progressData = true;
     notifyListeners();
     final  data =  await dbHelper.insertPost(post);
     if(data!=null){
       isSaved = data;
       _postSaveStream.sink.add(data);
     }
-    progressData = false;
+    // progressData = false;
     notifyListeners();
   }
 
@@ -103,12 +116,38 @@ class MainViewModel extends BaseViewModel {
     notifyListeners();
     final data = await dbHelper.getPosts();
     if (data != null) {
+      for(PostModel element in data){
+        element.isSaved = true;
+      }
       savedPosts = data;
       _savedPostsStream.sink.add(savedPosts);
     }
     progressData = false;
     notifyListeners();
   }
+
+//////////////////////
+
+  StreamController<int> _postRemoveStream = StreamController();
+
+  Stream<int> get removedPostData {
+    return _postRemoveStream.stream;
+  }
+
+  int isRemoved = 0;
+
+  void removePost(PostModel post) async{
+    // progressData = true;
+    notifyListeners();
+    final  data =  await dbHelper.deletePost(post.id);
+    if(data!=null){
+      isRemoved = data;
+      _postRemoveStream.sink.add(data);
+    }
+    // progressData = false;
+    notifyListeners();
+  }
+
 
 
 }
